@@ -7,7 +7,7 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:cross_file/cross_file.dart' show XFile;
-import 'package:meta/meta.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:mime/mime.dart';
 // ignore: implementation_imports
 import 'package:mime/src/default_extension_map.dart';
@@ -69,17 +69,17 @@ final class TextPart extends StandardPart {
 
   /// Creates a new text part.
   const TextPart(this.text);
-
   /// The text content.
-  final String text;
-
+  // final String text;
+  final ValueNotifier<String> text;
   /// Creates a text part from a JSON-compatible map.
   factory TextPart.fromJson(Map<String, Object?> json) {
-    return TextPart(json[_Json.content] as String);
+    return TextPart(
+        ValueNotifier(json[_Json.content] as String));
   }
 
   @override
-  Map<String, Object?> toJson() => {Part.typeKey: type, _Json.content: text};
+  Map<String, Object?> toJson() => {Part.typeKey: type, _Json.content: text.value};
 
   @override
   bool operator ==(Object other) {

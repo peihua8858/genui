@@ -1,0 +1,192 @@
+@startuml
+'数据交互时序图'
+'https://plantuml.com/sequence-diagram
+<style>
+element {
+  BackGroundColor: #f0f0f0
+}
+ sequenceDiagram {
+    participant {
+      FontColor: #000;
+      FontSize: 12;
+      FontStyle: normal;
+      LineColor: #000;
+      HorizontalAlignment: left;
+    }
+    note {
+      FontColor: #000;
+      FontSize: 12;
+      FontStyle: normal;
+    }
+    arrow {
+      FontColor: black;
+      LineColor: black;
+    }
+  }
+</style>
+title 数据交互时序图
+skinparam sequenceMessageAlign left
+skinparam sequence right
+participant Page [
+    = TravelPlannerPage
+    ----
+    旅行规划页面
+       1、初始化GoogleGenerativeAiClient
+       2、初始化Conversation
+       3、初始化SurfaceController
+       4、初始化A2uiTransportAdapter
+]
+participant Client [
+    = GoogleGenerativeAiClient
+    ----
+     Google Cloud生成内容的客户端
+]
+participant Adapter [
+    =A2uiTransportAdapter
+    ----
+     GenUI和AI服务之间消息适配器
+]
+participant Conversation [
+    =Conversation
+    ----
+     GenUI对话管理器
+]
+participant Parser [
+    =A2uiParserTransformer
+    ----
+     字符串解析器
+]
+participant Controller [
+    =SurfaceController
+    ----
+     GenUI控制器
+]
+
+autonumber 1
+Page -> Client: sendRequest
+autonumber 1.1
+Client ->Client:_generate:组装请求数据\n\t\t及发送网络请求,接收响应
+autonumber 1.1.1
+Client ->Client:<<functionCalls.isNotEmpty>> call->_processFunctionCalls
+autonumber 1.1.2
+Client ->Client :emitEvent:发送AiGenerationEvent事件
+autonumber 1.2
+Client ->Adapter :<<functionCalls.isEmpty>> call addChunk:是文本调用addChunk方法
+autonumber 1.2.1
+Adapter->Parser:调用addChunk方法触发\n_onData方法解析数据转成事件
+autonumber 1.2.2
+Parser->Parser:_onData
+autonumber 1.2.3
+Parser->Parser:_processBuffer
+autonumber 1.2.4
+Parser->Parser:_emitMessage
+autonumber 1.2.5
+Parser->Parser:__emitText
+autonumber 1.2.6
+Adapter -> Conversation:触发_textSubscription订阅，\n发送ConversationContentReceived事件
+autonumber 1.2.7
+Conversation-> Page
+autonumber inc A
+
+autonumber 1.3
+Client ->Adapter :<<functionCalls.isEmpty>>call addMessage:是A2uiMessage调用addMessage
+autonumber 1.3.1
+Adapter->Conversation:调用addMessage方法将触发\n_transportSubscription订阅事件
+autonumber 1.3.2
+Conversation->Controller:handleMessage
+autonumber 1.3.3
+Controller->Controller:_handleMessageInternal
+autonumber 1.3.4
+Controller->Controller:_engineSubscription:\n发送ConversationEvent事件
+autonumber 1.3.5
+Controller->Page
+
+autonumber 2
+Page -> Page:_uiConversation.events.listen
+autonumber 3
+Page -> Page:_messages:更新UI
+note over Page :更新UI
+
+@enduml
+
+
+@startuml
+'UI渲染时序图'
+'https://plantuml.com/sequence-diagram
+<style>
+element {
+  BackGroundColor: #f0f0f0
+}
+ sequenceDiagram {
+    participant {
+      FontColor: #000;
+      FontSize: 12;
+      FontStyle: normal;
+      LineColor: #000;
+      HorizontalAlignment: left;
+    }
+    note {
+      FontColor: #000;
+      FontSize: 12;
+      FontStyle: normal;
+    }
+    arrow {
+      FontColor: black;
+      LineColor: black;
+    }
+  }
+</style>
+title UI渲染时序图
+skinparam sequenceMessageAlign left
+participant ChatMessageView [
+    =ChatMessageView
+    ----
+    文本消息
+]
+participant Conversation [
+    =Conversation
+    ----
+    聊天列表
+]
+participant InternalMessageView [
+    =InternalMessageView
+    ----
+    系统消息
+]
+participant Surface [
+    =Surface
+    ----
+    组件渲染
+]
+participant Catalog [
+    =Catalog
+    ----
+    组件集合
+]
+participant CatalogItem [
+    =CatalogItem
+    ----
+    组件声明
+]
+Conversation -> Conversation: build
+Conversation ->Conversation: _buildUserMessage: 构建用户消息
+Conversation -> ChatMessageView:构建用户消息
+activate ChatMessageView
+ChatMessageView -> Conversation
+deactivate ChatMessageView
+Conversation ->Conversation:_buildSystemMessage: 构建系统消息
+Conversation -> InternalMessageView:构建系统消息
+activate InternalMessageView
+InternalMessageView -> Conversation
+deactivate InternalMessageView
+Conversation ->Conversation:__buildModelMessage: 构建模型消息
+Conversation -> Surface
+Surface -> Surface: _buildWidget
+Surface -> Catalog:buildWidget
+Catalog -> CatalogItem:widgetBuilder
+activate CatalogItem
+CatalogItem -> Catalog
+deactivate CatalogItem
+Catalog -> Surface
+Surface -> Conversation
+@enduml

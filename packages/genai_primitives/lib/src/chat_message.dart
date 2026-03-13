@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:collection/collection.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'finish_status.dart';
 import 'parts/parts.dart';
@@ -28,18 +28,15 @@ final class ChatMessage {
   ///
   /// If there is more than one part of type [TextPart], the [text] property
   /// will be a concatenation of all of them.
-  ChatMessage({
-    required this.role,
-    this.parts = const [],
-    this.metadata = const {},
-    this.finishStatus,
-  });
+  ChatMessage({required this.role, this.parts = const [], this.metadata = const {}, this.finishStatus});
 
-  static List<StandardPart> _partsFromText(
-    String text, {
-    required List<StandardPart> parts,
-  }) {
+  static List<StandardPart> _partsFromText(String text, {required List<StandardPart> parts}) {
     if (text.isEmpty) return parts;
+    return [TextPart(ValueNotifier(text)), ...parts];
+  }
+
+  static List<StandardPart> _partsFromText1(ValueNotifier<String> text, {required List<StandardPart> parts}) {
+    // if (text.value.isEmpty) return parts;
     return [TextPart(text), ...parts];
   }
 
@@ -100,14 +97,24 @@ final class ChatMessage {
          finishStatus: finishStatus,
        );
 
+  ChatMessage.model1(
+    ValueNotifier<String> text, {
+    List<StandardPart> parts = const [],
+    Map<String, Object?> metadata = const {},
+    FinishStatus? finishStatus,
+  }) : this(
+         role: ChatMessageRole.model,
+         parts: _partsFromText1(text, parts: parts),
+         metadata: metadata,
+         finishStatus: finishStatus,
+       );
+
   /// Deserializes a message.
   ///
   /// The message is compatible with [toJson].
   factory ChatMessage.fromJson(Map<String, Object?> json) {
     final List<StandardPart> parts =
-        (json[_Json.parts] as List<Object?>?)
-            ?.map((e) => StandardPart.fromJson(e as Map<String, Object?>))
-            .toList() ??
+        (json[_Json.parts] as List<Object?>?)?.map((e) => StandardPart.fromJson(e as Map<String, Object?>)).toList() ??
         const [];
 
     return ChatMessage(
@@ -116,9 +123,7 @@ final class ChatMessage {
       metadata: (json[_Json.metadata] as Map<String, Object?>?) ?? const {},
       finishStatus: json[_Json.finishStatus] == null
           ? null
-          : FinishStatus.fromJson(
-              json[_Json.finishStatus] as Map<String, Object?>,
-            ),
+          : FinishStatus.fromJson(json[_Json.finishStatus] as Map<String, Object?>),
     );
   }
 
@@ -173,9 +178,7 @@ final class ChatMessage {
       throw ArgumentError('Roles must match for concatenation');
     }
 
-    if (finishStatus != null &&
-        other.finishStatus != null &&
-        finishStatus != other.finishStatus) {
+    if (finishStatus != null && other.finishStatus != null && finishStatus != other.finishStatus) {
       throw ArgumentError('Finish statuses must match for concatenation');
     }
 
@@ -186,10 +189,7 @@ final class ChatMessage {
       );
     }
 
-    return copyWith(
-      parts: [...parts, ...other.parts],
-      finishStatus: finishStatus ?? other.finishStatus,
-    );
+    return copyWith(parts: [...parts, ...other.parts], finishStatus: finishStatus ?? other.finishStatus);
   }
 
   @override

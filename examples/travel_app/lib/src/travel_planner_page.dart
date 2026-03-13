@@ -111,10 +111,19 @@ class _TravelPlannerPageState extends State<TravelPlannerPage>
     });
 
     _uiConversation.events.listen((event) {
+      genUiLogger.info("addEvent:Conversation<><><><><> event: $event");
       if (event is ConversationContentReceived) {
+        genUiLogger.info(
+          "addEvent:Conversation>>>ConversationContentReceived event.text: ${event.text}",
+        );
+        genUiLogger.info(
+          "addEvent:Conversation>>>ConversationContentReceived _currentStreamingText: $_currentStreamingText",
+        );
         if (event.text.isNotEmpty) {
-          _currentStreamingText += event.text;
-
+          genUiLogger.info(
+            "addEvent:Conversation<><><><><>add text event: ${event.text}",
+          );
+          // _currentStreamingText += event.text;
           final updatedMessages = List<ChatMessage>.from(_messages.value);
           if (updatedMessages.isNotEmpty &&
               updatedMessages.last.role == .model &&
@@ -123,12 +132,25 @@ class _TravelPlannerPageState extends State<TravelPlannerPage>
               )) {
             updatedMessages.removeLast();
           }
-          updatedMessages.add(ChatMessage.model(_currentStreamingText));
+          ValueNotifier<String> streamingText = ValueNotifier("");
+          updatedMessages.add(ChatMessage.model1(streamingText));
           _messages.value = updatedMessages;
-
+          int currentIndex = 0;
+          final chars = event.text.characters.toList();
+          Timer.periodic(const Duration(milliseconds: 50), (timer) {
+            if (currentIndex < chars.length) {
+              streamingText.value += chars[currentIndex];
+              currentIndex++;
+            } else {
+              timer.cancel();
+            }
+          });
           _scrollToBottom();
         }
       } else if (event is ConversationSurfaceAdded) {
+        genUiLogger.info(
+          "addEvent:Conversation>>>ConversationSurfaceAdded event.surfaceId: ${event.surfaceId}",
+        );
         final updatedMessages = List<ChatMessage>.from(_messages.value);
         updatedMessages.add(
           ChatMessage(

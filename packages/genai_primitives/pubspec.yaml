@@ -10,11 +10,13 @@ license: BSD-3-Clause
 issue_tracker: https://github.com/flutter/genui/issues
 
 # This package is not included in monorepo to avoid circular dependencies and unrelated updates.
-
+resolution: workspace
 environment:
   sdk: ">=3.9.2 <4.0.0"
 
 dependencies:
+  flutter:
+    sdk: flutter
   collection: ^1.19.1
   cross_file: ^0.3.5+1
   json_schema_builder: ^0.1.3

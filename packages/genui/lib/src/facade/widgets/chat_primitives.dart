@@ -26,6 +26,126 @@ class InternalMessageView extends StatelessWidget {
   }
 }
 
+class ChatMessageView2 extends StatefulWidget {
+  const ChatMessageView2({
+    super.key,
+    required this.controller,
+    required this.icon,
+    required this.alignment,
+    this.charDuration = const Duration(milliseconds: 50),
+  });
+
+  /// 完整文本
+  final CombinedTextPartController controller;
+
+  /// 图标
+  final IconData icon;
+
+  /// 对齐方式
+  final MainAxisAlignment alignment;
+
+  /// 每个字符显示间隔
+  final Duration charDuration;
+
+  @override
+  State<ChatMessageView2> createState() => _ChatMessageViewState2();
+}
+
+class _ChatMessageViewState2 extends State<ChatMessageView2> {
+  bool get isStart => widget.alignment == MainAxisAlignment.start;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+      child: Row(
+        mainAxisAlignment: widget.alignment,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Flexible(
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(isStart ? 5 : 25),
+                  topRight: Radius.circular(isStart ? 25 : 5),
+                  bottomLeft: const Radius.circular(25),
+                  bottomRight: const Radius.circular(25),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isStart) ...[
+                      Icon(widget.icon),
+                      const SizedBox(width: 8.0),
+                    ],
+                    Flexible(
+                      child: ValueListenableBuilder<String>(
+                        valueListenable: widget.controller,
+                        builder: (context, value, child) {
+                          return Text(value);
+                        },
+                      ),
+                    ),
+                    if (!isStart) ...[
+                      const SizedBox(width: 8.0),
+                      Icon(widget.icon),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+/// A controller for a combined text part.
+class CombinedTextPartController extends ValueNotifier<String> {
+  final List<ValueNotifier<String>> _controllers;
+  final List<VoidCallback> _listeners = [];
+
+  CombinedTextPartController(List<ValueNotifier<String>> controllers)
+      : _controllers = List.unmodifiable(controllers),
+        super(_combine(controllers)) {
+    for (final ValueNotifier<String> controller in _controllers) {
+      void listener() {
+        value = _combine(_controllers);
+      }
+
+      controller.addListener(listener);
+      _listeners.add(listener);
+    }
+  }
+
+  static String _combine(List<ValueNotifier<String>> controllers) {
+    return controllers.map((e) => e.value).join();
+  }
+
+  List<ValueNotifier<String>> get controllers => _controllers;
+
+  @override
+  void dispose() {
+    for (var i = 0; i < _controllers.length; i++) {
+      _controllers[i].removeListener(_listeners[i]);
+    }
+    _listeners.clear();
+    super.dispose();
+  }
+}
 /// A widget to display a chat message.
 class ChatMessageView extends StatelessWidget {
   /// Creates a new [ChatMessageView].

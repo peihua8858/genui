@@ -101,7 +101,7 @@ class A2uiAgentConnector {
       role: Role.user,
       parts: chatMessage.parts.map<Part>((part) {
         if (part is genui.TextPart) {
-          return Part.text(text: part.text);
+          return Part.text(text: part.text.value);
         } else if (part.isUiInteractionPart) {
           final genui.UiInteractionPart uiPart = part.asUiInteractionPart!;
           try {
