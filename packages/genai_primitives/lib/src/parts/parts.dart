@@ -5,6 +5,7 @@
 import 'dart:collection';
 
 import 'package:collection/collection.dart';
+import 'package:flutter/cupertino.dart' show ValueNotifier;
 import 'package:meta/meta.dart';
 
 import 'model.dart';
@@ -21,7 +22,7 @@ final class Parts extends ListBase<Part> {
   /// If [text] is not empty, converts it to a [TextPart] and puts it as a
   /// first member of the [parts] list.
   factory Parts.fromText(String text, {Iterable<Part> parts = const []}) =>
-      text.isEmpty ? Parts(parts.toList()) : Parts([TextPart(text), ...parts]);
+      text.isEmpty ? Parts(parts.toList()) : Parts([TextPart(ValueNotifier(text)), ...parts]);
 
   /// Deserializes parts from a JSON list.
   factory Parts.fromJson(

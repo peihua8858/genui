@@ -49,7 +49,7 @@ class GoogleContentConverter {
     for (final part in parts) {
       switch (part) {
         case TextPart(:final text):
-          result.add(google_ai.Part(text: text));
+          result.add(google_ai.Part(text: text.value));
         case DataPart():
           if (part.isUiPart) {
             final UiPart uiPart = part.asUiPart!;

@@ -62,7 +62,7 @@ class Conversation extends StatelessWidget {
     );
     final String text = message.parts
         .whereType<TextPart>()
-        .map((part) => part.text)
+        .map((part) => part.text.value)
         .join('\n');
 
     if (text.isNotEmpty) {
@@ -104,15 +104,22 @@ class Conversation extends StatelessWidget {
       );
     }
 
-    final String text = message.parts
-        .whereType<TextPart>()
-        .map((part) => part.text)
-        .join('\n');
+    // final text = message.parts
+    //     .whereType<TextPart>()
+    //     .map((part) => part.text)
+    //     .join('\n');
+    final partTexts = message.parts.whereType<TextPart>().map((part) => part.text);
+    if (partTexts.isEmpty) {
+      return const SizedBox.shrink();
+
+    }
+    final text = partTexts.join('\n');
     if (text.trim().isEmpty) {
       return const SizedBox.shrink();
     }
-    return ChatMessageView(
-      text: text,
+    final controller = CombinedTextPartController(partTexts.toList());
+    return ChatMessageView2(
+      controller: controller,
       icon: Icons.smart_toy_outlined,
       alignment: MainAxisAlignment.start,
     );
@@ -121,7 +128,7 @@ class Conversation extends StatelessWidget {
   Widget _buildSystemMessage(ChatMessage message) {
     return InternalMessageView(
       content: message.parts
-          .map((p) => p is TextPart ? p.text : p.toString())
+          .map((p) => p is TextPart ? p.text.value : p.toString())
           .join('\n'),
     );
   }

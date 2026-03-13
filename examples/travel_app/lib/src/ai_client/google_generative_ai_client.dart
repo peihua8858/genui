@@ -524,6 +524,7 @@ With functions:
                 : null,
           );
           response = await service.generateContent(request);
+          // response =  google_ai.GenerateContentResponse();
           genUiLogger.finest(
             'Raw model response: ${_responseToString(response)}',
           );
@@ -561,6 +562,7 @@ With functions:
             'Response has no candidates: ${response.promptFeedback}',
           );
           return '';
+          // return fakeResponse();
         }
 
         final google_ai.Candidate candidate = response.candidates.first;
@@ -582,16 +584,60 @@ With functions:
                 .where((google_ai.Part p) => p.text != null)
                 .map((google_ai.Part p) => p.text!)
                 .toList();
+            genUiLogger.warning(
+              'Response has  textParts: ${textParts.join('"')}"',
+            );
             text = textParts.join('');
+            genUiLogger.warning(
+              'Response has  textParts: $text"',
+            );
           }
           if (candidate.content != null) {
             content.add(candidate.content!);
           }
 
           // Parse JSON from text.
+        final ParseResult? parseResult=  JsonBlockParser.splitTextAndJsonBlocks(text);
+          genUiLogger.warning('addEvent:Response has  parseResult: $parseResult"');
+          if (parseResult != null && parseResult.jsonBlocks.isNotEmpty) {
+            genUiLogger.warning('addEvent:Response has  add prefix>>>>>start"');
+           _textResponseController.add(parseResult.prefix);
+            genUiLogger.warning('addEvent:Response has  add prefix>>>>>end"');
+            genUiLogger.warning('addEvent:Response has  add jsonBlocks>>>>>start"');
+           List<String> jsonBlocks = parseResult.jsonBlocks;
+            for (final content in jsonBlocks) {
+              try {
+               final jsonBlock = (jsonDecode(content) as Object);
+                if (jsonBlock is Map<String, dynamic>) {
+                  // The model sometimes omits the version, so we inject it if
+                  // it's missing.
+                  if (!jsonBlock.containsKey('version')) {
+                    jsonBlock['version'] = 'v0.9';
+                  }
+                  final message = A2uiMessage.fromJson(jsonBlock);
+                  _a2uiMessageController.add(message);
+                  genUiLogger.info(
+                    'Emitted A2UI message from prompt extraction: $message',
+                  );
+                }
+              } catch (e) {
+                genUiLogger.warning(
+                  'Failed to parse extracted JSON as A2uiMessage: $e',
+                );
+              }
+            }
+            genUiLogger.warning('addEvent:Response has  add jsonBlocks>>>>>end"');
+            genUiLogger.warning('addEvent:Response has  add suffix>>>>>start"');
+            _textResponseController.add(parseResult.suffix);
+            genUiLogger.warning('addEvent:Response has  add suffix>>>>>end"');
+            return parseResult.prefix + parseResult.suffix;
+          }
+
+          // Parse JSON from text.
           final List<dynamic> jsonBlocks = JsonBlockParser.parseJsonBlocks(
             text,
           );
+          genUiLogger.warning('Response has  jsonBlocks: $jsonBlocks"');
           for (final jsonBlock in jsonBlocks) {
             try {
               if (jsonBlock is Map<String, dynamic>) {
@@ -616,6 +662,7 @@ With functions:
           if (jsonBlocks.isNotEmpty) {
             // remove the JSON from the text response
             text = JsonBlockParser.stripJsonBlock(text);
+            genUiLogger.warning('Response has  stripJsonBlock: $text"');
           }
 
           genUiLogger.fine('Returning text response: "$text"');
@@ -668,6 +715,46 @@ With functions:
     } finally {
       service.close();
     }
+  }
+
+  String fakeResponse(){
+    final text ="你好！深圳是一座充满活力的现代化大都市，被称为中国的“硅谷”。这里有创新的科技、琳琅满目的购物中心，以及独具特色的主题公园。\n\n为了更好地为您规划行程，我准备了一些关于深圳的信息。如果您准备好了，我们可以开始为您定制专属的旅行计划。\n\n```json\n{\n  \"version\": \"v0.9\",\n  \"createSurface\": {\n    \"surfaceId\": \"shenzhen_info_surface\",\n    \"catalogId\": \"https://a2ui.org/specification/v0_9/standard_catalog.json\",\n    \"sendDataModel\": true\n  }\n}\n```\n\n```json\n{\n  \"version\": \"v0.9\",\n  \"updateComponents\": {\n    \"surfaceId\": \"shenzhen_info_surface\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"Column\",\n        \"children\": [\n          \"shenzhen_header\",\n          \"shenzhen_card\",\n          \"itinerary_options\"\n        ]\n      },\n      {\n        \"id\": \"shenzhen_header\",\n        \"component\": \"Text\",\n        \"text\": \"探索深圳\",\n        \"variant\": \"h2\"\n      },\n      {\n        \"id\": \"shenzhen_card\",\n        \"component\": \"InformationCard\",\n        \"title\": \"深圳：创新的窗口\",\n        \"subtitle\": \"中国，广东省\",\n        \"imageChildId\": \"shenzhen_image\",\n        \"body\": \"深圳从一个渔村迅速崛起为国际化大都市，以其前卫的建筑、蓬勃发展的科技产业和宜人的城市绿化而闻名。这里有世界之窗、欢乐谷等著名景点，还有华强北的电子奇迹和南山区的现代景观。\"\n      },\n      {\n        \"id\": \"shenzhen_image\",\n        \"component\": \"Image\",\n        \"url\": \"assets/travel_images/temple_of_heaven_beijing_china.jpg\",\n        \"variant\": \"mediumFeature\",\n        \"fit\": \"cover\"\n      },\n      {\n        \"id\": \"itinerary_options\",\n        \"component\": \"Trailhead\",\n        \"topics\": [\n          \"创建深圳旅行行程\",\n          \"了解深圳的美食\",\n          \"探索广东地区\"\n        ],\n        \"action\": {\n          \"event\": {\n            \"name\": \"select_topic\",\n            \"context\": {\n              \"destination\": \"深圳\"\n            }\n          }\n        }\n      }\n    ]\n  }\n}\n```你可以点击上方的卡片来选择你感兴趣的地区，或者直接告诉我你的旅行偏好（比如人数、天数、预算等），我将为你制定专属行程。";
+    final ParseResult? parseResult=  JsonBlockParser.splitTextAndJsonBlocks(text);
+    genUiLogger.warning('addEvent:Response has  parseResult: $parseResult"');
+    if (parseResult != null && parseResult.jsonBlocks.isNotEmpty) {
+      genUiLogger.warning('addEvent:Response has  add prefix>>>>>start"');
+      _textResponseController.add(parseResult.prefix);
+      genUiLogger.warning('addEvent:Response has  add prefix>>>>>end"');
+      genUiLogger.warning('addEvent:Response has  add jsonBlocks>>>>>start"');
+      List<String> jsonBlocks = parseResult.jsonBlocks;
+      for (final content in jsonBlocks) {
+        try {
+          final jsonBlock = (jsonDecode(content) as Object);
+          if (jsonBlock is Map<String, dynamic>) {
+            // The model sometimes omits the version, so we inject it if
+            // it's missing.
+            if (!jsonBlock.containsKey('version')) {
+              jsonBlock['version'] = 'v0.9';
+            }
+            final message = A2uiMessage.fromJson(jsonBlock);
+            _a2uiMessageController.add(message);
+            genUiLogger.info(
+              'Emitted A2UI message from prompt extraction: $message',
+            );
+          }
+        } catch (e) {
+          genUiLogger.warning(
+            'Failed to parse extracted JSON as A2uiMessage: $e',
+          );
+        }
+      }
+      genUiLogger.warning('addEvent:Response has  add jsonBlocks>>>>>end"');
+      genUiLogger.warning('addEvent:Response has  add suffix>>>>>start"');
+      _textResponseController.add(parseResult.suffix);
+      genUiLogger.warning('addEvent:Response has  add suffix>>>>>end"');
+      return parseResult.prefix + parseResult.suffix;
+    }
+    return "";
   }
 }
 

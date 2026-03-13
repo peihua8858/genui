@@ -142,4 +142,38 @@ class JsonBlockParser {
 
     return processed.trim();
   }
+  /// Parses all valid JSON objects or arrays found in [text].
+  static ParseResult? splitTextAndJsonBlocks(String text) {
+    final reg = RegExp(r'```json\s*([\s\S]*?)\s*```', multiLine: true);
+    final List<RegExpMatch> matches = reg.allMatches(text).toList();
+
+    if (matches.isEmpty) {
+      return null;
+    }
+
+    final String prefix = text.substring(0, matches.first.start);
+    final String suffix = text.substring(matches.last.end);
+    final List<String> jsonBlocks = matches
+        .map((m) => m.group(1) ?? '')
+        .toList();
+
+    return ParseResult(prefix: prefix, jsonBlocks: jsonBlocks, suffix: suffix);
+  }
+}
+
+class ParseResult {
+  final String prefix;
+  final List<String> jsonBlocks;
+  final String suffix;
+
+  ParseResult({
+    required this.prefix,
+    required this.jsonBlocks,
+    required this.suffix,
+  });
+  @override
+  String toString() {
+    return 'ParseResult(prefix: $prefix, \njsonBlocks: $jsonBlocks, \nsuffix: $suffix)';
+  }
+
 }
