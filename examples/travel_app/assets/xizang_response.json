@@ -1,0 +1,38 @@
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "您好！西藏是一个充满神秘色彩和壮丽景观的地方。为了帮您规划一次完美的西藏之旅，我们先来看看您对哪种类型的体验最感兴趣。\n\n这里有一些西藏旅行的不同主题供您参考：\n\n```json\n{\n  \"version\": \"v0.9\",\n  \"createSurface\": {\n    \"surfaceId\": \"tibet_inspiration\",\n    \"catalogId\": \"https://a2ui.org/specification/v0_9/standard_catalog.json\",\n    \"sendDataModel\": true\n  }\n}\n```\n\n```json\n{\n  \"version\": \"v0.9\",\n  \"updateComponents\": {\n    \"surfaceId\": \"tibet_inspiration\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"Column\",\n        \"children\": [\n          \"title\",\n          \"inspiration_carousel\"\n        ]\n      },\n      {\n        \"id\": \"title\",\n        \"component\": \"Text\",\n        \"text\": \"开启您的西藏之旅\",\n        \"variant\": \"h2\"\n      },\n      {\n        \"id\": \"inspiration_carousel\",\n        \"component\": \"TravelCarousel\",\n        \"title\": \"选择您的旅行风格\",\n        \"items\": [\n          {\n            \"description\": \"拉萨文化遗产之旅：探索布达拉宫与大昭寺的辉煌\",\n            \"imageChildId\": \"culture_img\",\n            \"action\": {\n              \"event\": {\n                \"name\": \"select_inspiration\",\n                \"context\": {\n                  \"topic\": \"Lhasa Culture\"\n                }\n              }\n            }\n          },\n          {\n            \"description\": \"珠峰大本营挑战：近距离感受世界之巅的震撼\",\n            \"imageChildId\": \"everest_img\",\n            \"action\": {\n              \"event\": {\n                \"name\": \"select_inspiration\",\n                \"context\": {\n                  \"topic\": \"Everest Base Camp\"\n                }\n              }\n            }\n          },\n          {\n            \"description\": \"林芝自然风光：观赏南迦巴瓦峰与雅鲁藏布大峡谷\",\n            \"imageChildId\": \"nature_img\",\n            \"action\": {\n              \"event\": {\n                \"name\": \"select_inspiration\",\n                \"context\": {\n                  \"topic\": \"Nyingchi Nature\"\n                }\n              }\n            }\n          },\n          {\n            \"description\": \"藏传佛教朝圣：寻访散落在雪域高原的各大寺庙\",\n            \"imageChildId\": \"spiritual_img\",\n            \"action\": {\n              \"event\": {\n                \"name\": \"select_inspiration\",\n                \"context\": {\n                  \"topic\": \"Spiritual Monasteries\"\n                }\n              }\n            }\n          }\n        ]\n      },\n      {\n        \"id\": \"culture_img\",\n        \"component\": \"Image\",\n        \"url\": \"assets/travel_images/temple_of_heaven_beijing_china.jpg\",\n        \"variant\": \"mediumFeature\"\n      },\n      {\n        \"id\": \"everest_img\",\n        \"component\": \"Image\",\n        \"url\": \"assets/travel_images/koryaksky_volcano_kamchatka_russia.jpg\",\n        \"variant\": \"mediumFeature\"\n      },\n      {\n        \"id\": \"nature_img\",\n        \"component\": \"Image\",\n        \"url\": \"assets/travel_images/mount_garibaldi_british_columbia.jpg\",\n        \"variant\": \"mediumFeature\"\n      },\n      {\n        \"id\": \"spiritual_img\",\n        \"component\": \"Image\",\n        \"url\": \"assets/travel_images/borobudur_indonesia.jpg\",\n        \"variant\": \"mediumFeature\"\n      }\n    ]\n  }\n}\n```\n\n您可以点击上方感兴趣的选项，或者直接告诉我您的想法（比如旅行天数、预算或特定想去的地方），我将为您量身定制详细的行程！",
+            "thoughtSignature": "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"
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 26342,
+    "candidatesTokenCount": 942,
+    "totalTokenCount": 28077,
+    "cachedContentTokenCount": 24548,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 26342
+      }
+    ],
+    "cacheTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 24548
+      }
+    ],
+    "thoughtsTokenCount": 793
+  },
+  "modelVersion": "gemini-3-flash-preview",
+  "responseId": "VNuzaanuAfiaqtsP88SquAM"
+}

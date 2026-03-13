@@ -1,0 +1,38 @@
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "您好！很高兴能为您规划海南之旅。海南是一个充满热带风情的地方，无论是想在三亚的沙滩上放松，还是去万宁冲浪，亦或是探索海口的古老街巷，都能找到适合您的旅行方式。\n\n为了更好地开始，我们可以先看看您对哪种类型的海南之旅最感兴趣：\n\n```json\n{\n  \"createSurface\": {\n    \"surfaceId\": \"hainan_inspiration\",\n    \"catalogId\": \"https://a2ui.org/specification/v0_9/standard_catalog.json\",\n    \"sendDataModel\": true\n  }\n}\n```\n\n```json\n{\n  \"updateComponents\": {\n    \"surfaceId\": \"hainan_inspiration\",\n    \"components\": [\n      {\n        \"id\": \"root\",\n        \"component\": \"Column\",\n        \"children\": [\n          \"inspiration_title\",\n          \"inspiration_carousel\",\n          \"destination_heading\",\n          \"destination_trailhead\"\n        ]\n      },\n      {\n        \"id\": \"inspiration_title\",\n        \"component\": \"Text\",\n        \"text\": \"开启您的海南之旅\",\n        \"variant\": \"h2\"\n      },\n      {\n        \"id\": \"inspiration_carousel\",\n        \"component\": \"TravelCarousel\",\n        \"title\": \"选择您的旅行风格\",\n        \"items\": [\n          {\n            \"description\": \"三亚：悠闲的海滩度假与高端酒店享受\",\n            \"imageChildId\": \"sanya_beach_img\",\n            \"action\": {\n              \"event\": {\n                \"name\": \"select_inspiration\",\n                \"context\": {\n                  \"style\": \"beach_luxury\",\n                  \"location\": \"Sanya\"\n                }\n              }\n            }\n          },\n          {\n            \"description\": \"万宁：动感的冲浪体验与最美滨海公路\",\n            \"imageChildId\": \"wanning_surf_img\",\n            \"action\": {\n              \"event\": {\n                \"name\": \"select_inspiration\",\n                \"context\": {\n                  \"style\": \"adventure_surf\",\n                  \"location\": \"Wanning\"\n                }\n              }\n            }\n          },\n          {\n            \"description\": \"海口：感受骑楼老街的南洋文化与地道美食\",\n            \"imageChildId\": \"haikou_culture_img\",\n            \"action\": {\n              \"event\": {\n                \"name\": \"select_inspiration\",\n                \"context\": {\n                  \"style\": \"culture_food\",\n                  \"location\": \"Haikou\"\n                }\n              }\n            }\n          },\n          {\n            \"description\": \"中部雨林：探索呀诺达热带雨林的自然奥秘\",\n            \"imageChildId\": \"rainforest_img\",\n            \"action\": {\n              \"event\": {\n                \"name\": \"select_inspiration\",\n                \"context\": {\n                  \"style\": \"nature_exploration\",\n                  \"location\": \"Central Hainan\"\n                }\n              }\n            }\n          }\n        ]\n      },\n      {\n        \"id\": \"sanya_beach_img\",\n        \"component\": \"Image\",\n        \"url\": \"assets/travel_images/kata_noi_beach_phuket_thailand.jpg\",\n        \"variant\": \"mediumFeature\",\n        \"fit\": \"cover\"\n      },\n      {\n        \"id\": \"wanning_surf_img\",\n        \"component\": \"Image\",\n        \"url\": \"assets/travel_images/promthep_cape_phuket_thailand.jpg\",\n        \"variant\": \"mediumFeature\",\n        \"fit\": \"cover\"\n      },\n      {\n        \"id\": \"haikou_culture_img\",\n        \"component\": \"Image\",\n        \"url\": \"assets/travel_images/temple_of_heaven_beijing_china.jpg\",\n        \"variant\": \"mediumFeature\",\n        \"fit\": \"cover\"\n      },\n      {\n        \"id\": \"rainforest_img\",\n        \"component\": \"Image\",\n        \"url\": \"assets/travel_images/jedediah_smith_redwoods_california.jpg\",\n        \"variant\": \"mediumFeature\",\n        \"fit\": \"cover\"\n      },\n      {\n        \"id\": \"destination_heading\",\n        \"component\": \"Text\",\n        \"text\": \"准备好开始规划了吗？\",\n        \"variant\": \"h3\"\n      },\n      {\n        \"id\": \"destination_trailhead\",\n        \"component\": \"Trailhead\",\n        \"topics\": [\n          \"为我规划三亚5天行程\",\n          \"万宁冲浪环岛游建议\",\n          \"海口吃货3日攻略\",\n          \"海南全岛自驾游规划\"\n        ],\n        \"action\": {\n          \"event\": {\n            \"name\": \"start_itinerary_flow\"\n          }\n        }\n      }\n    ]\n  }\n}\n```\n\n您可以点击上方感兴趣的旅行风格，或者直接告诉我您的想法（比如：出行人数、天数、预算等），我将为您量身定制一份详细的行程单！",
+            "thoughtSignature": "EvYMCvMMAb4+9vtQNw4/7LPr1MFh3B9t40Esg13z+DwLvM6gmTtVSxNgiXicIwlTnd/cZTlx03X/pAcDOlfewE3tnV72DZ7GJV3KYU8ogWY6rSvTwsYPm7WjDRnkPPhf3K2APwnoGnvpgNphDwU7vfbdMZClrT8IpaHf0UVjNbpZ0ANFnpgs6tRaXtk5tI6hXROuDrXNkQpqTKT+t6MlITXLQYvOcCOWC+bSl6qEDBerAvR3MhaINGkmBQy9mE9mgTcWg3LER+lvsUA1BT0Sm2MuBzuhAEFXoXAs2n4kuI1L1Oor/jXCxySc3BCwdJpbJJio3mgO3gTo5BvbqXR/w+jTgi2VsTr3SGuMGz22UmccATDSC3sHIuQReVsOjnMSATmZamykVJN8AtjNCsTTwTUhoP1qFiO45j3eYmrLxm3VfQLjQTUDbso3jNMwrK7R1kKIRoML8UscUZi6DRsBmJa1CVeqo96Q4DLhwkBpH7Plaky8MJfkXNU9bYP8FPTlOCJDQlleSbst5VlVzoYxYhgs8I326mN1MgV4i2pvuSWvTIgZBEB4pFRw6S408Y7IMBaQpiEVX1iGxJjjXb6+B/hZC3wL6uwehMWINEr/JWNjCUOlHsU6hZxY6mXzv5ShW5v2S1P9iobqWYa/TERfz+WpQVx8IRCgCmxyGUIL5THgPnLc17eT1BRMGb0iLxIHTrqlNUCOoUKFQNVtC4olayBTIyn6KMnGmSC0J0yJgsdpAxg/eXvjwNR1OwnHCXAtwFhEq2qMtVCCoLDgLtFkPx0g7v0EZGvbMj6GKtUJAqQtg/bTmXgrXefI5ShcqFMWmEiu+VA1bjpbzM2XWxHgbsVXDntZBTf2PHSp7EqyyPHVAiSxMKDGC4I6aCXRz1x2euMtXaLiSklaNxKT6XqoSER2y8qQqT8HobDPtf/fdnu2MCAtBbLx9gM9fhVH+1EzXzqzFXDbuZpfa9W1veBUEMK+H7l8Rhs4uZFVuaBkp2UHdQ8UHA6JNZZNE6SJSv4Qb7EBK53EqXj3tIoeLA7YN/FLxxKmYPN45PEddb5jViQ49Ic3O/5FsOjUw1awsCENbN+NEfmMDgQ5wGVJXCdlgIM7C5emWoTm3/uYwFvrEDk6T1mlKSCpoGJ32YXCuW6UeO7EBM0ca0QS4VQpXRRnilplm4Uu73t7LnOTcMntpzufP1Vxbdsl0JRlSsawqYIzp9qa1ROlbOdWJQONDbVMHouppVNYwrrHNvP6QdP6MdZ+UU+VRf0Vw2JtMs9nuqfXMQYqUzFSTF5nTlpsaVCP6HmnBGVWqL0w5xulhPD8v1bxdPHbshoMSLQSprUCF0g/2qdH5pmMXUCYYeH0rBx4qy14HEDDvA/K5KZKEJmmlbvpTgrYSBKt0B61uRzlrdJPXv1kJNqldRX/OGC4sGKne5PgWo249HZkmnb/U6kckcVgVsvXS46ftTgsqhzciHQIPB8AlUj1YvsiF2ChtrKRrp+Bu+DpDA3P8WpyJrFihlhskAPsg9Cug2mCl8c4Z9vQRM2hQrFNPYAzA/OK/R54rDHgKE3YVoagScmCdG0Phj3ON01ZHfQfxllfrOuuOk9pp/xPJEq4ZODQ7j1Efc4BX6bZ+CkNTyxLzqI1kYeS7lD1Xs15IwjPvkluanoyM24FYpkuZZxt1s9RFszqbMbB5ElpSln1gcfCBEPH0cZW2WQ30fql+FYMh1RGawa8CV4R6dfnVm7w5mIZJdEHsg9wCPwaaX49Bn1JphFTfpVjrZNT0f9zmQIB/GTzt61Y/biGehg8tx4Zq1oUU6AxFo00fRGFNRb+gKs/7D77E7a49Z06ESVzajJHjqOSOisV6hAzGGd6b9ZdMAob7TNEYnWtIjJWcy1CCoBNBwyOgjL4rL3yR+chYBhUad90EMsovI+lxbbDijfeP0JQz9LEL3YF2LJs7t0mgr9B1LqcB0J3anFPEFGTvimAzRcw46SU9wfourneYBv9AABjVu0F61kmQeMhSF9E8XMtR8daFHOFmEBF+c+3+647HGrPJjwWPQuyjCqOEV1e4i8oG/8p4DP1MejjeldCyu48ATsypMVggvcoLYGScIXPSeJoDko4KKRnAjpcivE3Rdb/Z0Q5Mb3noto9QE35U3HdUGHuqnuT8GHgkMofjb5Bz5uKBR1QNgdnWk6tgW6LGDE2kFRhu7rCVy1sQkypGDLtFQ=="
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 26340,
+    "candidatesTokenCount": 1198,
+    "totalTokenCount": 27979,
+    "cachedContentTokenCount": 24548,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 26340
+      }
+    ],
+    "cacheTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 24548
+      }
+    ],
+    "thoughtsTokenCount": 441
+  },
+  "modelVersion": "gemini-3-flash-preview",
+  "responseId": "PdyzaeG6LMWnmtkPkoX02QI"
+}
