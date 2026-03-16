@@ -16,7 +16,9 @@ The main goal of this example is to demonstrate the fundamental concepts of `gen
 5. Render these dynamic UI surfaces within a standard chat message list.
 6. Manage a conversation history that interleaves user text messages with AI-generated UI responses.
 
-Unlike more complex examples, this app does not define a custom widget catalog. Instead, it relies on the default `coreCatalog` provided by `genui`, meaning the AI can only respond with basic widgets like `Text`, `Column`, `ElevatedButton`, etc.
+Unlike more complex examples, this app does not define a custom
+
+ widget catalog. Instead, it relies on the default `coreCatalog` provided by `genui`, meaning the AI can only respond with basic widgets like `Text`, `Column`, `ElevatedButton`, etc.
 
 ## How it Works
 
