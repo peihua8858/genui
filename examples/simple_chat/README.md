@@ -2,7 +2,7 @@ This application is a minimal example of how to use the `genui` package to creat
 
 ### 交互时序图
 
-![.png](assets/数据交互时序图-.png)
+![.png](assets/sequenceDiagram.png)
 
 ## Purpose
 
