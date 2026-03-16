@@ -4,6 +4,10 @@ This application is a demonstration of the `genui` package, showcasing how to bu
 
 The app functions as a travel planning assistant. Users can describe their desired trip, and the AI will respond by generating a rich, interactive UI to help them plan and refine their itinerary.
 
+### 交互时序图
+
+![.png](assets/数据交互时序图-.png)
+
 ## How it Works
 
 Instead of responding with text, the AI in this application communicates by building a user interface from a predefined catalog of Flutter widgets. The conversation flows as follows:
@@ -40,13 +44,13 @@ Follow the instructions in the [run_app_with_gemini_key.md](../../docs/run_app_w
 
 To use Firebase, you need to configure the project and update the code.
 
-1.  **Configure Firebase**: Follow the instructions in the main `genui` package [README.md](../../packages/genui/README.md#configure-firebase-ai-logic) to add Firebase to your Flutter app.
-    *   Set up a Firebase project.
-    *   Generate `firebase_options.dart` using `flutterfire configure`.
-2.  **Update Configuration**:
-    *   Open `lib/src/config/configuration.dart` and change `aiBackend` to `AiBackend.firebase`.
-    *   Open `lib/main.dart` and uncomment the Firebase initialization code and imports (look for `UNCOMMENT_FOR_FIREBASE`).
-3.  **Run the App**:
-    ```bash
-    flutter run
-    ```
+1. **Configure Firebase**: Follow the instructions in the main `genui` package [README.md](../../packages/genui/README.md#configure-firebase-ai-logic) to add Firebase to your Flutter app.
+   * Set up a Firebase project.
+   * Generate `firebase_options.dart` using `flutterfire configure`.
+2. **Update Configuration**:
+   * Open `lib/src/config/configuration.dart` and change `aiBackend` to `AiBackend.firebase`.
+   * Open `lib/main.dart` and uncomment the Firebase initialization code and imports (look for `UNCOMMENT_FOR_FIREBASE`).
+3. **Run the App**:
+   ```bash
+   flutter run
+   ```

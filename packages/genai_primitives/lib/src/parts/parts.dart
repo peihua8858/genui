@@ -64,7 +64,7 @@ final class Parts extends ListBase<Part> {
   ///
   /// Returns a single string with all text content concatenated together
   /// without any separators. Empty text parts are included in the result.
-  late final String text = whereType<TextPart>().map((p) => p.text).join();
+  late final String text = whereType<TextPart>().map((p) => p.text.value).join();
 
   /// Extracts all tool call parts from the list.
   ///
