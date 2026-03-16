@@ -62,6 +62,7 @@ If there is no way to itemize all the options, either use the component '${Basic
         case ConversationSurfaceAdded(:final surfaceId):
           _addSurfaceMessage(surfaceId);
         case ConversationContentReceived(:final text):
+          _logger.info('ConversationContentReceived>>text:>>>$text');
           _updateAiMessage(text);
         case ConversationError(:final error):
           _logger.severe('Error in conversation', error);
@@ -102,6 +103,7 @@ If there is no way to itemize all the options, either use the component '${Basic
   Message? _currentAiMessage;
 
   void _updateAiMessage(String chunk) {
+    _logger.info('_updateAiMessage>>>>>$chunk');
     if (_currentAiMessage == null) {
       _currentAiMessage = Message(isUser: false, text: '');
       _messages.add(_currentAiMessage!);

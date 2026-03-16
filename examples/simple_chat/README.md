@@ -1,10 +1,14 @@
-# Simple Chat Example
-
 This application is a minimal example of how to use the `genui` package to create a simple, conversational chat application.
+
+### 交互时序图
+
+![.png](assets/数据交互时序图-.png)
 
 ## Purpose
 
+
 The main goal of this example is to demonstrate the fundamental concepts of `genui` in a straightforward chat context. It shows how to:
+
 1. Initialize and use the `SurfaceController`, the core engine for the package.
 2. Provide a simple system prompt to guide the AI's behavior.
 3. Send user messages to the AI and receive responses.
@@ -33,3 +37,4 @@ The application's logic is contained almost entirely within `lib/chat_session.da
 ## Getting Started
 
 Follow the instructions in the [run_app_with_gemini_key.md](../../docs/run_app_with_gemini_key.md).
+

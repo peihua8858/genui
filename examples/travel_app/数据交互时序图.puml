@@ -41,6 +41,16 @@ participant Client [
     ----
      Google Cloud生成内容的客户端
 ]
+participant GenerativeServiceInterface [
+    = GoogleGenerativeServiceInterface
+    ----
+     GenUI服务
+]
+participant GenerativeService [
+    = GenerativeService
+    ----
+     GenUI服务
+]
 participant Adapter [
     =A2uiTransportAdapter
     ----
@@ -64,46 +74,83 @@ participant Controller [
 
 autonumber 1
 Page -> Client: sendRequest
-autonumber 1.1
-Client ->Client:_generate:组装请求数据\n\t\t及发送网络请求,接收响应
-autonumber 1.1.1
-Client ->Client:<<functionCalls.isNotEmpty>> call->_processFunctionCalls
-autonumber 1.1.2
-Client ->Client :emitEvent:发送AiGenerationEvent事件
-autonumber 1.2
-Client ->Adapter :<<functionCalls.isEmpty>> call addChunk:是文本调用addChunk方法
-autonumber 1.2.1
-Adapter->Parser:调用addChunk方法触发\n_onData方法解析数据转成事件
-autonumber 1.2.2
-Parser->Parser:_onData
-autonumber 1.2.3
-Parser->Parser:_processBuffer
-autonumber 1.2.4
-Parser->Parser:_emitMessage
-autonumber 1.2.5
-Parser->Parser:__emitText
-autonumber 1.2.6
-Adapter -> Conversation:触发_textSubscription订阅，\n发送ConversationContentReceived事件
-autonumber 1.2.7
-Conversation-> Page
-autonumber inc A
-
-autonumber 1.3
-Client ->Adapter :<<functionCalls.isEmpty>>call addMessage:是A2uiMessage调用addMessage
-autonumber 1.3.1
-Adapter->Conversation:调用addMessage方法将触发\n_transportSubscription订阅事件
-autonumber 1.3.2
-Conversation->Controller:handleMessage
-autonumber 1.3.3
-Controller->Controller:_handleMessageInternal
-autonumber 1.3.4
-Controller->Controller:_engineSubscription:\n发送ConversationEvent事件
-autonumber 1.3.5
-Controller->Page
-
 autonumber 2
-Page -> Page:_uiConversation.events.listen
+Client ->Client:_generate:组装请求数据\n\t\t及发送网络请求,接收响应
 autonumber 3
+Client -> GenerativeServiceInterface: generateContent
+autonumber 4
+GenerativeServiceInterface -> GenerativeService:generateContent:发送请求
+autonumber 5
+GenerativeService -> GenerativeServiceInterface:返回GenerateContentResponse
+autonumber 6
+GenerativeServiceInterface -> Client:返回GenerateContentResponse
+group 6.1 addFunctionCall
+    autonumber 6.1
+    Client ->Client:<<functionCalls.isNotEmpty>> call->_processFunctionCalls
+    autonumber 6.1.1
+    Client ->Client :emitEvent:发送AiGenerationEvent事件
+end
+group 6.2 addChunk
+    autonumber 6.2
+    Client ->Adapter :<<functionCalls.isEmpty>> call addChunk:是文本调用addChunk方法
+    group 6.2.1 文本消息
+        autonumber 6.2.1
+        Adapter->Parser:调用addChunk方法触发\n_onData方法解析数据转成事件
+        autonumber 6.2.1.1
+        Parser->Parser:_onData
+        autonumber 6.2.1.2
+        Parser->Parser:_processBuffer
+        autonumber 6.2.1.3
+        Parser->Parser:__emitText
+        autonumber 6.2.1.4
+        Parser -> Adapter:将文本添加到_pipeline
+        autonumber 6.2.1.5
+        Adapter -> Conversation:触发_textSubscription订阅，发送ConversationEvent事件
+    end
+    group 6.2.2 A2UI消息
+        autonumber 6.2.2
+        Parser->Parser:_emitMessage
+        autonumber 6.2.2.1
+        Parser ->Adapter:触发_pipeline.listen更新_messageStream
+        autonumber 6.2.2.2
+        Adapter -> Conversation:触发_transportSubscription订阅
+        autonumber 6.2.2.3
+        Conversation-> Controller:handleMessage
+        autonumber 6.2.2.4
+        Controller -> Controller:_handleMessageInternal更新_registry
+        autonumber 6.2.2.5
+        Controller -> Controller:_registry.updateSurface/removeSurface更新_registry
+        autonumber 6.2.2.6
+        Controller -> Controller:_registry.events:返回SurfaceUpdate类型
+        autonumber 6.2.2.7
+        Controller -> Conversation:触发_engineSubscription订阅
+        autonumber 6.2.2.8
+        Conversation -> Conversation:发送ConversationEvent事件
+    end
+end
+group 6.3 addA2uiMessage
+    autonumber 6.3
+    Client ->Adapter :<<functionCalls.isEmpty>>call addMessage:是A2uiMessage调用addMessage
+    autonumber 6.3.1
+    Adapter->Conversation:调用addMessage方法将触发\n_transportSubscription订阅事件
+    autonumber 6.3.2
+    Conversation->Controller:handleMessage
+    autonumber 6.3.3
+    Controller->Controller:_handleMessageInternal更新_registry
+    autonumber 6.3.4
+    Controller -> Controller:_registry.updateSurface/removeSurface更新_registry
+    autonumber 6.3.5
+    Controller -> Controller:_registry.events:返回SurfaceUpdate类型
+    autonumber 6.3.6
+    Controller -> Conversation:触发_engineSubscription订阅
+    autonumber 6.3.7
+    Conversation -> Conversation:发送ConversationEvent事件
+end
+autonumber 7
+Conversation-> Page
+autonumber 8
+Page -> Page:_uiConversation.events.listen
+autonumber 9
 Page -> Page:_messages:更新UI
 note over Page :更新UI
 
