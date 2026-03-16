@@ -50,9 +50,3 @@ To use Firebase, you need to configure the project and update the code.
     ```bash
     flutter run
     ```
-``` mermaid
-graph 
-A -> B;
- .....数据交互时序图.....
-participant Main as 聊天UI页面
-```
