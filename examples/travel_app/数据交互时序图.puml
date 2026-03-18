@@ -36,6 +36,27 @@ participant Page [
        3、初始化SurfaceController
        4、初始化A2uiTransportAdapter
 ]
+participant Conversation [
+    =Conversation
+    ----
+     GenUI对话管理器
+]
+participant Controller [
+    =SurfaceController
+    ----
+     GenUI控制器
+]
+
+participant Adapter [
+    =A2uiTransportAdapter
+    ----
+     GenUI和AI服务之间消息适配器
+]
+participant Parser [
+    =A2uiParserTransformer
+    ----
+     字符串解析器
+]
 participant Client [
     = GoogleGenerativeAiClient
     ----
@@ -51,51 +72,35 @@ participant GenerativeService [
     ----
      GenUI服务
 ]
-participant Adapter [
-    =A2uiTransportAdapter
-    ----
-     GenUI和AI服务之间消息适配器
-]
-participant Conversation [
-    =Conversation
-    ----
-     GenUI对话管理器
-]
-participant Parser [
-    =A2uiParserTransformer
-    ----
-     字符串解析器
-]
-participant Controller [
-    =SurfaceController
-    ----
-     GenUI控制器
-]
 
 autonumber 1
 Page -> Client: sendRequest
+activate Page
+activate Client
 autonumber 2
 Client ->Client:_generate:组装请求数据\n\t\t及发送网络请求,接收响应
 autonumber 3
-Client -> GenerativeServiceInterface: generateContent
+Client -> GenerativeServiceInterface++: generateContent
 autonumber 4
-GenerativeServiceInterface -> GenerativeService:generateContent:发送请求
-autonumber 5
-GenerativeService -> GenerativeServiceInterface:返回GenerateContentResponse
+GenerativeServiceInterface -> GenerativeService++:generateContent:发送请求
+return GenerateContentResponse
+return GenerateContentResponse
 autonumber 6
-GenerativeServiceInterface -> Client:返回GenerateContentResponse
 group 6.1 addFunctionCall
     autonumber 6.1
     Client ->Client:<<functionCalls.isNotEmpty>> call->_processFunctionCalls
     autonumber 6.1.1
     Client ->Client :emitEvent:发送AiGenerationEvent事件
 end
+deactivate Client
 group 6.2 addChunk
     autonumber 6.2
-    Client ->Adapter :<<functionCalls.isEmpty>> call addChunk:是文本调用addChunk方法
+    Client o-> Adapter :<<functionCalls.isEmpty>> call addChunk:是文本调用addChunk方法
+    activate Adapter
     group 6.2.1 文本消息
         autonumber 6.2.1
         Adapter->Parser:调用addChunk方法触发\n_onData方法解析数据转成事件
+        activate Parser
         autonumber 6.2.1.1
         Parser->Parser:_onData
         autonumber 6.2.1.2
@@ -106,16 +111,20 @@ group 6.2 addChunk
         Parser -> Adapter:将文本添加到_pipeline
         autonumber 6.2.1.5
         Adapter -> Conversation:触发_textSubscription订阅，发送ConversationEvent事件
+         activate Conversation
     end
     group 6.2.2 A2UI消息
         autonumber 6.2.2
         Parser->Parser:_emitMessage
         autonumber 6.2.2.1
         Parser ->Adapter:触发_pipeline.listen更新_messageStream
+        deactivate Parser
         autonumber 6.2.2.2
         Adapter -> Conversation:触发_transportSubscription订阅
+        deactivate Adapter
         autonumber 6.2.2.3
         Conversation-> Controller:handleMessage
+        activate Controller
         autonumber 6.2.2.4
         Controller -> Controller:_handleMessageInternal更新_registry
         autonumber 6.2.2.5
@@ -124,17 +133,22 @@ group 6.2 addChunk
         Controller -> Controller:_registry.events:返回SurfaceUpdate类型
         autonumber 6.2.2.7
         Controller -> Conversation:触发_engineSubscription订阅
+        deactivate Controller
         autonumber 6.2.2.8
         Conversation -> Conversation:发送ConversationEvent事件
+
     end
 end
 group 6.3 addA2uiMessage
     autonumber 6.3
-    Client ->Adapter :<<functionCalls.isEmpty>>call addMessage:是A2uiMessage调用addMessage
+    Client o->Adapter :<<functionCalls.isEmpty>>call addMessage:是A2uiMessage调用addMessage
+    activate Adapter
     autonumber 6.3.1
     Adapter->Conversation:调用addMessage方法将触发\n_transportSubscription订阅事件
+    deactivate Adapter
     autonumber 6.3.2
     Conversation->Controller:handleMessage
+    activate Controller
     autonumber 6.3.3
     Controller->Controller:_handleMessageInternal更新_registry
     autonumber 6.3.4
@@ -143,17 +157,20 @@ group 6.3 addA2uiMessage
     Controller -> Controller:_registry.events:返回SurfaceUpdate类型
     autonumber 6.3.6
     Controller -> Conversation:触发_engineSubscription订阅
+    deactivate Controller
     autonumber 6.3.7
     Conversation -> Conversation:发送ConversationEvent事件
+
 end
 autonumber 7
 Conversation-> Page
+deactivate Conversation
 autonumber 8
 Page -> Page:_uiConversation.events.listen
 autonumber 9
 Page -> Page:_messages:更新UI
 note over Page :更新UI
-
+deactivate Page
 @enduml
 
 
@@ -185,15 +202,15 @@ element {
 </style>
 title UI渲染时序图
 skinparam sequenceMessageAlign left
-participant ChatMessageView [
-    =ChatMessageView
-    ----
-    文本消息
-]
 participant Conversation [
     =Conversation
     ----
     聊天列表
+]
+participant ChatMessageView [
+    =ChatMessageView
+    ----
+    文本消息
 ]
 participant InternalMessageView [
     =InternalMessageView
@@ -215,25 +232,27 @@ participant CatalogItem [
     ----
     组件声明
 ]
-Conversation -> Conversation: build
+Conversation -> Conversation++: build
 Conversation ->Conversation: _buildUserMessage: 构建用户消息
-Conversation -> ChatMessageView:构建用户消息
-activate ChatMessageView
-ChatMessageView -> Conversation
-deactivate ChatMessageView
+Conversation -> ChatMessageView++:构建用户消息
+return Widget
 Conversation ->Conversation:_buildSystemMessage: 构建系统消息
-Conversation -> InternalMessageView:构建系统消息
-activate InternalMessageView
-InternalMessageView -> Conversation
-deactivate InternalMessageView
+Conversation -> InternalMessageView++:构建系统消息
+return Widget
 Conversation ->Conversation:__buildModelMessage: 构建模型消息
-Conversation -> Surface
-Surface -> Surface: _buildWidget
-Surface -> Catalog:buildWidget
-Catalog -> CatalogItem:widgetBuilder
-activate CatalogItem
-CatalogItem -> Catalog
-deactivate CatalogItem
-Catalog -> Surface
-Surface -> Conversation
+Conversation ->Surface++:构建Surface动态界面的控件
+Surface -> Surface:_findCatalogForDefinition:获取root组件Catalog
+group 组件构建并递归构建子组件
+    Surface -> Surface: _buildWidget
+    Surface -> Catalog++:buildWidget：根据组件定义类型（type）获取组件
+    Catalog -> CatalogItem ++:widgetBuilder:构建对应组件
+    CatalogItem -> CatalogItemContext ++ :buildChild:构建子组件
+    CatalogItemContext -> Surface:_buildWidget
+end
+Surface -> ChatMessageView++:构建用户消息
+return Widget
+return Widget
+return Widget
+return Widget
+return Widget
 @enduml

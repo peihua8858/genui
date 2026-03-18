@@ -181,6 +181,10 @@ interface class Conversation {
 
   /// Sends a request to the LLM.
   Future<void> sendRequest(ChatMessage message) async {
+    // If we are already waiting, don't send another request.
+    if (state.value.isWaiting) {
+      return;
+    }
     _eventController.add(ConversationWaiting());
     _updateState((s) => s.copyWith(isWaiting: true));
     try {

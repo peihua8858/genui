@@ -15,6 +15,7 @@ import 'catalog/tabbed_sections.dart';
 import 'catalog/text_input_chip.dart';
 import 'catalog/trailhead.dart';
 import 'catalog/travel_carousel.dart';
+import 'package:genui/src/catalog/basic_functions.dart';
 
 /// Defines the collection of UI components that the generative AI model can use
 /// to construct the user interface for the travel app.
@@ -25,6 +26,24 @@ import 'catalog/travel_carousel.dart';
 /// and [inputGroup]. The AI selects from these components to build a dynamic
 /// and interactive UI in response to user prompts.
 final Catalog travelAppCatalog = Catalog([
+  BasicCatalogItems.audioPlayer,
+  BasicCatalogItems.button,
+  BasicCatalogItems.card,
+  BasicCatalogItems.checkBox,
+  BasicCatalogItems.column,
+  BasicCatalogItems.dateTimeInput,
+  BasicCatalogItems.divider,
+  BasicCatalogItems.icon,
+  BasicCatalogItems.image,
+  BasicCatalogItems.list,
+  BasicCatalogItems.modal,
+  BasicCatalogItems.choicePicker,
+  BasicCatalogItems.row,
+  BasicCatalogItems.slider,
+  BasicCatalogItems.tabs,
+  BasicCatalogItems.text,
+  BasicCatalogItems.textField,
+  BasicCatalogItems.video,
   BasicCatalogItems.button,
   BasicCatalogItems.column,
   BasicCatalogItems.text,
@@ -41,3 +60,46 @@ final Catalog travelAppCatalog = Catalog([
   trailhead,
   travelCarousel,
 ], catalogId: basicCatalogId);
+
+Catalog asCatalog({List<String> systemPromptFragments = const []}) {
+  return Catalog(
+    [
+      BasicCatalogItems.audioPlayer,
+      BasicCatalogItems.button,
+      BasicCatalogItems.card,
+      BasicCatalogItems.checkBox,
+      BasicCatalogItems.column,
+      BasicCatalogItems.dateTimeInput,
+      BasicCatalogItems.divider,
+      BasicCatalogItems.icon,
+      BasicCatalogItems.image,
+      BasicCatalogItems.list,
+      BasicCatalogItems.modal,
+      BasicCatalogItems.choicePicker,
+      BasicCatalogItems.row,
+      BasicCatalogItems.slider,
+      BasicCatalogItems.tabs,
+      BasicCatalogItems.text,
+      BasicCatalogItems.textField,
+      BasicCatalogItems.video,
+      BasicCatalogItems.button,
+      BasicCatalogItems.column,
+      BasicCatalogItems.text,
+      BasicCatalogItems.image,
+      checkboxFilterChipsInput,
+      dateInputChip,
+      informationCard,
+      inputGroup,
+      itinerary,
+      listingsBooker,
+      optionsFilterChipInput,
+      tabbedSections,
+      textInputChip,
+      trailhead,
+      travelCarousel,
+    ],
+    functions: BasicFunctions.all,
+    catalogId: basicCatalogId,
+    systemPromptFragments: [BasicCatalogItems.basicCatalogRules, ...systemPromptFragments],
+  );
+}
