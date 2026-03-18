@@ -12,7 +12,9 @@ environment:
 resolution: workspace
 
 dependencies:
-  dartantic_ai: ^3.1.0
+#  dartantic_ai: ^3.1.0
+  dartantic_ai:
+    path: ../../../dartantic/packages/dartantic_ai
   flutter:
     sdk: flutter
   genui: ^0.7.0

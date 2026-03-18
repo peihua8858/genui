@@ -24,8 +24,14 @@ class MessageView extends StatelessWidget {
   Widget build(BuildContext context) {
     final String? surfaceId = message.surfaceId;
 
-    if (surfaceId == null) return Text(message.text ?? '');
-
+    // if (surfaceId == null) return Text(message.text ?? '');
+    if (surfaceId == null) {
+      return ChatMessageView(
+        text: message.text??'',
+        icon: message.isUser ? Icons.person : Icons.smart_toy_outlined,
+        alignment: message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+      );
+    }
     return Surface(surfaceContext: host.contextFor(surfaceId));
   }
 }

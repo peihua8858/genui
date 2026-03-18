@@ -2,10 +2,11 @@ This application is a minimal example of how to use the `genui` package to creat
 
 ### 交互时序图
 
-![.png](assets/sequenceDiagram.png)
+![.png](assets/sequence-diagram-data.png)
+
+![.png](assets/sequence-diagram-ui.png)
 
 ## Purpose
-
 
 The main goal of this example is to demonstrate the fundamental concepts of `genui` in a straightforward chat context. It shows how to:
 
@@ -18,7 +19,7 @@ The main goal of this example is to demonstrate the fundamental concepts of `gen
 
 Unlike more complex examples, this app does not define a custom
 
- widget catalog. Instead, it relies on the default `coreCatalog` provided by `genui`, meaning the AI can only respond with basic widgets like `Text`, `Column`, `ElevatedButton`, etc.
+widget catalog. Instead, it relies on the default `coreCatalog` provided by `genui`, meaning the AI can only respond with basic widgets like `Text`, `Column`, `ElevatedButton`, etc.
 
 ## How it Works
 
@@ -39,4 +40,3 @@ The application's logic is contained almost entirely within `lib/chat_session.da
 ## Getting Started
 
 Follow the instructions in the [run_app_with_gemini_key.md](../../docs/run_app_with_gemini_key.md).
-

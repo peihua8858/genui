@@ -6,7 +6,9 @@ The app functions as a travel planning assistant. Users can describe their desir
 
 ### 交互时序图
 
-![.png](assets/sequenceDiagram.png)
+![.png](assets/sequence-diagram-data.png)
+
+![.png](assets/sequence-diagram-ui.png)
 
 ## How it Works
 
