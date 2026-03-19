@@ -90,21 +90,24 @@ class ChatSession extends ChangeNotifier {
   }
 
   void _addSurfaceMessage(String surfaceId) {
+    _logger.info('_addSurfaceMessage>>>>>chunk:$surfaceId');
     final bool exists = _messages.any((m) => m.surfaceId == surfaceId);
     if (!exists) {
       _messages.add(Message(isUser: false, text: null, surfaceId: surfaceId));
       notifyListeners();
     }
+    _currentAiMessage = null;
   }
 
   Message? _currentAiMessage;
 
   void _updateAiMessage(String chunk) {
-    _logger.info('_updateAiMessage>>>>>$chunk');
+    _logger.info('_updateAiMessage>>>>>chunk:$chunk');
     if (_currentAiMessage == null) {
       _currentAiMessage = Message(isUser: false, text: '');
       _messages.add(_currentAiMessage!);
     }
+    _logger.info('_updateAiMessage>>>>_currentAiMessage!.text:${_currentAiMessage!.text}');
     _currentAiMessage!.text = (_currentAiMessage!.text ?? '') + chunk;
     notifyListeners();
   }
@@ -115,7 +118,7 @@ class ChatSession extends ChangeNotifier {
     // Reset current AI message so new response gets a new bubble
     _currentAiMessage = null;
 
-    _messages.add(Message(isUser: true, text: 'You: $text'));
+    _messages.add(Message(isUser: true, text: text));
     // Do NOT notify here if we want to wait for "isWaiting" to update?
     // Actually we want to show user message immediately.
     notifyListeners();

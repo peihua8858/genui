@@ -48,9 +48,10 @@ class AiClientTransport implements Transport {
       final fullResponseBuffer = StringBuffer();
 
       await for (final chunk in stream) {
+        _logger.info('sendRequest>>stream.chunk:>>>$chunk');
         if (chunk.isNotEmpty) {
           fullResponseBuffer.write(chunk);
-          _adapter.addChunk(chunk);
+          addChunk(chunk);
         }
       }
 
@@ -69,5 +70,15 @@ class AiClientTransport implements Transport {
   /// Adds a system message to the history.
   void addSystemMessage(String content) {
     _history.add(dartantic.ChatMessage.system(content));
+  }
+
+  @override
+  void addChunk(String chunk) {
+    _adapter.addChunk(chunk);
+  }
+
+  @override
+  void addMessage(A2uiMessage message) {
+    _adapter.addMessage(message);
   }
 }
