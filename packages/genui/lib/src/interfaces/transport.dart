@@ -26,4 +26,6 @@ abstract interface class Transport {
 
   /// Disposes of any resources used by this transport.
   void dispose();
+  void addChunk(String text) ;
+  void addMessage(A2uiMessage message) ;
 }

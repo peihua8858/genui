@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 /// A widget to display an internal message in the chat.
@@ -113,14 +115,15 @@ class _ChatMessageViewState2 extends State<ChatMessageView2> {
     );
   }
 }
+
 /// A controller for a combined text part.
 class CombinedTextPartController extends ValueNotifier<String> {
   final List<ValueNotifier<String>> _controllers;
   final List<VoidCallback> _listeners = [];
 
-  CombinedTextPartController(List<ValueNotifier<String>> controllers)
-      : _controllers = List.unmodifiable(controllers),
-        super(_combine(controllers)) {
+  CombinedTextPartController(List<ValueNotifier<String>> values)
+    : _controllers = List.unmodifiable(values),
+      super(_combine(values)) {
     for (final ValueNotifier<String> controller in _controllers) {
       void listener() {
         value = _combine(_controllers);
@@ -146,6 +149,7 @@ class CombinedTextPartController extends ValueNotifier<String> {
     super.dispose();
   }
 }
+
 /// A widget to display a chat message.
 class ChatMessageView extends StatelessWidget {
   /// Creates a new [ChatMessageView].
@@ -196,6 +200,133 @@ class ChatMessageView extends StatelessWidget {
                     if (isStart) ...[Icon(icon), const SizedBox(width: 8.0)],
                     Flexible(child: Text(text)),
                     if (!isStart) ...[const SizedBox(width: 8.0), Icon(icon)],
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ChatMessageView1 extends StatefulWidget {
+  const ChatMessageView1({
+    super.key,
+    required this.text,
+    required this.icon,
+    required this.alignment,
+    this.charDuration = const Duration(milliseconds: 50),
+    this.animate = false,
+    this.onTypingCompleted,
+  });
+
+  /// 完整文本
+  final String text;
+
+  /// 图标
+  final IconData icon;
+
+  /// 对齐方式
+  final MainAxisAlignment alignment;
+
+  /// 每个字符显示间隔
+  final Duration charDuration;
+  final VoidCallback? onTypingCompleted;
+
+  /// 是否播放打字动画
+  final bool animate;
+
+  @override
+  State<ChatMessageView1> createState() => _ChatMessageViewState1();
+}
+
+class _ChatMessageViewState1 extends State<ChatMessageView1> {
+  String _displayedText = '';
+  Timer? _timer;
+  int _currentIndex = 0;
+  late List<String> _chars;
+
+  bool get isStart => widget.alignment == MainAxisAlignment.start;
+
+  @override
+  void initState() {
+    super.initState();
+    _chars = widget.text.characters.toList();
+    if (widget.animate) {
+      _startTyping(fromBeginning: true);
+    } else {
+      _displayedText = widget.text;
+      _currentIndex = _chars.length;
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant ChatMessageView1 oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // 如果外部传入的 text 变了，重新开始逐字显示
+    if (oldWidget.text != widget.text) {
+      _chars = widget.text.characters.toList();
+      if (_timer == null || !_timer!.isActive) {
+        _startTyping();
+      }
+    }
+  }
+
+  void _startTyping({bool fromBeginning = false}) {
+    if (fromBeginning) {
+      _currentIndex = 0;
+      _displayedText = '';
+    }
+    if (_chars.isEmpty) return;
+
+    _timer = Timer.periodic(widget.charDuration, (timer) {
+      if (_currentIndex < _chars.length) {
+        setState(() {
+          _currentIndex++;
+          _displayedText = _chars.take(_currentIndex).join();
+        });
+      } else {
+        timer.cancel();
+        widget.onTypingCompleted?.call();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+      child: Row(
+        mainAxisAlignment: widget.alignment,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Flexible(
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(isStart ? 5 : 25),
+                  topRight: Radius.circular(isStart ? 25 : 5),
+                  bottomLeft: const Radius.circular(25),
+                  bottomRight: const Radius.circular(25),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isStart) ...[Icon(widget.icon), const SizedBox(width: 8.0)],
+                    Flexible(child: Text(_displayedText)),
+                    if (!isStart) ...[const SizedBox(width: 8.0), Icon(widget.icon)],
                   ],
                 ),
               ),
