@@ -11,11 +11,6 @@ import 'package:genui/genui.dart';
 /// This interface defines the contract for communicating with an AI service,
 /// regardless of the implementation (e.g., Google Generative AI, fake client).
 abstract interface class AiClient {
-  /// The stream of [A2uiMessage]s received from the AI.
-  Stream<A2uiMessage> get a2uiMessageStream;
-
-  /// The stream of text chunks received from the AI.
-  Stream<String> get textResponseStream;
 
   /// Sends a message to the AI service.
   ///

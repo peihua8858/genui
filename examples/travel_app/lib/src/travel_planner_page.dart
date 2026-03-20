@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:genui/genui.dart' hide Conversation;
 import 'package:genui/genui.dart' as genui;
+import 'package:travel_app/src/ai_client/fake_ai_client.dart';
 
 import 'ai_client/ai_client.dart';
 import 'ai_client/google_generative_ai_client.dart';
@@ -66,7 +67,7 @@ class _TravelPlannerPageState extends State<TravelPlannerPage>
   // We keep a reference to the client to dispose it if we created it.
   AiClient? _client;
   bool _didCreateClient = false;
-
+  bool _isMockClient = true;
   final _textController = TextEditingController();
   final _scrollController = ScrollController();
 
@@ -89,7 +90,7 @@ class _TravelPlannerPageState extends State<TravelPlannerPage>
     _client = widget.aiClient;
     if (_client == null) {
       _didCreateClient = true;
-      _client = GoogleGenerativeAiClient(
+      _client =_isMockClient?FakeAiClient(transport: _transportAdapter): GoogleGenerativeAiClient(
         catalog: travelAppCatalog,
         transport: _transportAdapter,
         systemInstruction: prompt,
@@ -99,8 +100,6 @@ class _TravelPlannerPageState extends State<TravelPlannerPage>
         apiKey: getApiKey(),
       );
     }
-
-    _wireClient(_client!, _transportAdapter);
 
     _uiConversation = genui.Conversation(
       transport: _transportAdapter,
@@ -155,11 +154,6 @@ class _TravelPlannerPageState extends State<TravelPlannerPage>
         _scrollToBottom();
       }
     });
-  }
-
-  void _wireClient(AiClient client, A2uiTransportAdapter controller) {
-    // client.a2uiMessageStream.listen(controller.addMessage);
-    // client.textResponseStream.listen(controller.addChunk);
   }
 
   Future<void> _sendRequest(
