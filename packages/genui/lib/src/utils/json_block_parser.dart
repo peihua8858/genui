@@ -142,38 +142,38 @@ class JsonBlockParser {
 
     return processed.trim();
   }
-  /// Parses all valid JSON objects or arrays found in [text].
-  static ParseResult? splitTextAndJsonBlocks(String text) {
-    final reg = RegExp(r'```json\s*([\s\S]*?)\s*```', multiLine: true);
-    final List<RegExpMatch> matches = reg.allMatches(text).toList();
 
-    if (matches.isEmpty) {
-      return null;
+  /// Parses all valid JSON objects or arrays found in [text].
+  static List<dynamic> splitTextAndJsonToObjects(String input) {
+    final List<dynamic> result = [];
+
+    final jsonBlockRegex = RegExp(r'```json\s*([\s\S]*?)\s*```', caseSensitive: false, multiLine: true);
+
+    var currentIndex = 0;
+
+    for (final RegExpMatch match in jsonBlockRegex.allMatches(input)) {
+      final String before = input.substring(currentIndex, match.start).trim();
+      if (before.isNotEmpty) {
+        result.add(before);
+      }
+
+      final String? jsonString = match.group(1)?.trim();
+      if (jsonString != null && jsonString.isNotEmpty) {
+        try {
+          result.add(jsonDecode(jsonString));
+        } catch (_) {
+          result.add(jsonString);
+        }
+      }
+
+      currentIndex = match.end;
     }
 
-    final String prefix = text.substring(0, matches.first.start);
-    final String suffix = text.substring(matches.last.end);
-    final List<String> jsonBlocks = matches
-        .map((m) => m.group(1) ?? '')
-        .toList();
+    final String after = input.substring(currentIndex).trim();
+    if (after.isNotEmpty) {
+      result.add(after);
+    }
 
-    return ParseResult(prefix: prefix, jsonBlocks: jsonBlocks, suffix: suffix);
+    return result;
   }
-}
-
-class ParseResult {
-  final String prefix;
-  final List<String> jsonBlocks;
-  final String suffix;
-
-  ParseResult({
-    required this.prefix,
-    required this.jsonBlocks,
-    required this.suffix,
-  });
-  @override
-  String toString() {
-    return 'ParseResult(prefix: $prefix, \njsonBlocks: $jsonBlocks, \nsuffix: $suffix)';
-  }
-
 }

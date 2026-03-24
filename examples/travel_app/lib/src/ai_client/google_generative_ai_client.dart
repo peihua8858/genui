@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:genui/genui.dart';
 import 'package:genui/parsing.dart';
@@ -584,40 +585,34 @@ With functions:
           }
 
           // Parse JSON from text.
-        final ParseResult? parseResult=  JsonBlockParser.splitTextAndJsonBlocks(text);
-          genUiLogger.warning('addEvent:Response has  parseResult: $parseResult"');
-          if (parseResult != null && parseResult.jsonBlocks.isNotEmpty) {
-            genUiLogger.warning('addEvent:Response has  add prefix>>>>>start"');
-            transport.addChunk(parseResult.prefix);
-            genUiLogger.warning('addEvent:Response has  add prefix>>>>>end"');
-            genUiLogger.warning('addEvent:Response has  add jsonBlocks>>>>>start"');
-           List<String> jsonBlocks = parseResult.jsonBlocks;
-            for (final content in jsonBlocks) {
-              try {
-               final jsonBlock = (jsonDecode(content) as Object);
-                if (jsonBlock is Map<String, dynamic>) {
+          final result = JsonBlockParser.splitTextAndJsonToObjects(text);
+          genUiLogger.warning('Response has json and text result: $result"');
+          if (result.isNotEmpty) {
+            final StringBuffer buffer = StringBuffer();
+            for (final item in result) {
+              if (item is String) {
+                final chars = item.characters.toList();
+                for (final content in chars) {
+                  transport.addChunk(content);
+                  buffer.write(content);
+                  await Future.delayed(const Duration(milliseconds: 50));
+                }
+              } else if (item is Map<String, dynamic>) {
+                try {
                   // The model sometimes omits the version, so we inject it if
                   // it's missing.
-                  if (!jsonBlock.containsKey('version')) {
-                    jsonBlock['version'] = 'v0.9';
+                  if (!item.containsKey('version')) {
+                    item['version'] = 'v0.9';
                   }
-                  final message = A2uiMessage.fromJson(jsonBlock);
+                  final message = A2uiMessage.fromJson(item);
                   transport.addMessage(message);
-                  genUiLogger.info(
-                    'Emitted A2UI message from prompt extraction: $message',
-                  );
+                  genUiLogger.info('Emitted A2UI message from prompt extraction: $message');
+                } catch (e) {
+                  genUiLogger.warning('Failed to parse extracted JSON as A2uiMessage: $e');
                 }
-              } catch (e) {
-                genUiLogger.warning(
-                  'Failed to parse extracted JSON as A2uiMessage: $e',
-                );
               }
             }
-            genUiLogger.warning('addEvent:Response has  add jsonBlocks>>>>>end"');
-            genUiLogger.warning('addEvent:Response has  add suffix>>>>>start"');
-            transport.addChunk(parseResult.suffix);
-            genUiLogger.warning('addEvent:Response has  add suffix>>>>>end"');
-            return parseResult.prefix + parseResult.suffix;
+            return buffer.toString();
           }
 
           // Parse JSON from text.
