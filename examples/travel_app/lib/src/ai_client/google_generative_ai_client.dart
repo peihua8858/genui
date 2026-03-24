@@ -62,7 +62,9 @@ class GoogleGenerativeAiClient implements AiClient {
     this.modelName = 'models/gemini-3-flash-preview',
     this.apiKey,
   });
+
   final Transport transport;
+
   /// The catalog of UI components available to the AI.
   final Catalog catalog;
 
@@ -135,8 +137,7 @@ class GoogleGenerativeAiClient implements AiClient {
 
   /// Sends a request to the AI model.
   @override
-  Future<void> sendRequest(
-    ChatMessage message, {
+  Future<void> sendRequest(ChatMessage message, {
     Iterable<ChatMessage>? history,
     A2UiClientCapabilities? clientCapabilities,
     Map<String, Object?>? clientDataModel,
@@ -182,20 +183,20 @@ class GoogleGenerativeAiClient implements AiClient {
   }) {
     genUiLogger.fine(
       'Setting up tools'
-      '${isForcedToolCalling ? ' with forced tool calling' : ''}',
+          '${isForcedToolCalling ? ' with forced tool calling' : ''}',
     );
     // Create an "output" tool that copies its args into the output.
     final DynamicAiTool<Map<String, Object?>>? finalOutputAiTool =
-        isForcedToolCalling
+    isForcedToolCalling
         ? DynamicAiTool<Map<String, Object?>>(
-            name: outputToolName,
-            description:
-                '''Returns the final output. Call this function when you are done with the current turn of the conversation. Do not call this if you need to use other tools first. You MUST call this tool when you are done.''',
-            // Wrap the outputSchema in an object so that the output schema
-            // isn't limited to objects.
-            parameters: dsb.S.object(properties: {'output': outputSchema!}),
-            invokeFunction: (args) async => args, // Invoke is a pass-through
-          )
+      name: outputToolName,
+      description:
+      '''Returns the final output. Call this function when you are done with the current turn of the conversation. Do not call this if you need to use other tools first. You MUST call this tool when you are done.''',
+      // Wrap the outputSchema in an object so that the output schema
+      // isn't limited to objects.
+      parameters: dsb.S.object(properties: {'output': outputSchema!}),
+      invokeFunction: (args) async => args, // Invoke is a pass-through
+    )
         : null;
 
     final List<AiTool<JsonMap>> allTools = isForcedToolCalling
@@ -230,7 +231,7 @@ class GoogleGenerativeAiClient implements AiClient {
         if (result.errors.isNotEmpty) {
           genUiLogger.warning(
             'Errors adapting parameters for tool ${tool.name}: '
-            '${result.errors.join('\n')}',
+                '${result.errors.join('\n')}',
           );
         }
         adaptedParameters = result.schema;
@@ -254,7 +255,7 @@ class GoogleGenerativeAiClient implements AiClient {
     }
     genUiLogger.fine(
       'Adapted tools to function declarations: '
-      '${functionDeclarations.map((d) => d.name).join(', ')}',
+          '${functionDeclarations.map((d) => d.name).join(', ')}',
     );
 
     final List<google_ai.Tool>? tools = functionDeclarations.isNotEmpty
@@ -264,7 +265,7 @@ class GoogleGenerativeAiClient implements AiClient {
     if (tools != null) {
       genUiLogger.finest(
         'Tool declarations being sent to the model: '
-        '${jsonEncode(tools)}',
+            '${jsonEncode(tools)}',
       );
     }
 
@@ -363,13 +364,13 @@ class GoogleGenerativeAiClient implements AiClient {
         }
         genUiLogger.info(
           '****** Gen UI Output ******.\n'
-          '${const JsonEncoder.withIndent('  ').convert(capturedResult)}',
+              '${const JsonEncoder.withIndent('  ').convert(capturedResult)}',
         );
         break;
       }
 
       final AiTool<JsonMap> aiTool = availableTools.firstWhere(
-        (t) => t.name == call.name || t.fullName == call.name,
+            (t) => t.name == call.name || t.fullName == call.name,
         orElse: () => throw Exception('Unknown tool ${call.name} called.'),
       );
 
@@ -383,7 +384,7 @@ class GoogleGenerativeAiClient implements AiClient {
         toolResult = await aiTool.invoke(argsMap);
         genUiLogger.info(
           'Invoked tool ${aiTool.name} with args $argsMap. '
-          'Result: $toolResult',
+              'Result: $toolResult',
         );
       } catch (exception, stackTrace) {
         genUiLogger.severe(
@@ -418,11 +419,11 @@ class GoogleGenerativeAiClient implements AiClient {
     }
     genUiLogger.fine(
       'Finished processing function calls. Returning '
-      '${functionResponseParts.length} responses.',
+          '${functionResponseParts.length} responses.',
     );
     return (
-      functionResponseParts: functionResponseParts,
-      capturedResult: capturedResult,
+    functionResponseParts: functionResponseParts,
+    capturedResult: capturedResult,
     );
   }
 
@@ -450,8 +451,8 @@ class GoogleGenerativeAiClient implements AiClient {
       );
 
       final (
-        :List<google_ai.Tool>? tools,
-        :Set<String> allowedFunctionNames,
+          :List<google_ai.Tool>? tools,
+          :Set<String> allowedFunctionNames,
       ) = _setupToolsAndFunctions(
         isForcedToolCalling: false,
         availableTools: availableTools,
@@ -507,10 +508,10 @@ With functions:
             tools: tools ?? [],
             toolConfig: (tools?.isNotEmpty ?? false)
                 ? google_ai.ToolConfig(
-                    functionCallingConfig: google_ai.FunctionCallingConfig(
-                      mode: google_ai.FunctionCallingConfig_Mode.auto,
-                    ),
-                  )
+              functionCallingConfig: google_ai.FunctionCallingConfig(
+                mode: google_ai.FunctionCallingConfig_Mode.auto,
+              ),
+            )
                 : null,
           );
           response = await service.generateContent(request);
@@ -540,10 +541,10 @@ With functions:
         }
         genUiLogger.info(
           '****** Completed Inference ******\n'
-          'Latency = ${elapsed.inMilliseconds}ms\n'
-          'Output tokens = '
-          '${response.usageMetadata?.candidatesTokenCount ?? 0}\n'
-          'Prompt tokens = ${response.usageMetadata?.promptTokenCount ?? 0}',
+              'Latency = ${elapsed.inMilliseconds}ms\n'
+              'Output tokens = '
+              '${response.usageMetadata?.candidatesTokenCount ?? 0}\n'
+              'Prompt tokens = ${response.usageMetadata?.promptTokenCount ?? 0}',
         );
 
         if (response.candidates.isEmpty) {
@@ -660,13 +661,13 @@ With functions:
         }
         genUiLogger.fine(
           'Added assistant message with '
-          '${candidate.content?.parts.length ?? 0} '
-          'parts to conversation.',
+              '${candidate.content?.parts.length ?? 0} '
+              'parts to conversation.',
         );
 
         final ({
-          Object? capturedResult,
-          List<google_ai.Part> functionResponseParts,
+        Object? capturedResult,
+        List<google_ai.Part> functionResponseParts,
         })
         result = await _processFunctionCalls(
           functionCalls: functionCalls,
@@ -683,7 +684,7 @@ With functions:
           );
           genUiLogger.fine(
             'Added tool response message with ${functionResponseParts.length} '
-            'parts to conversation.',
+                'parts to conversation.',
           );
         }
       }
@@ -699,44 +700,45 @@ With functions:
     }
   }
 
-String _responseToString(google_ai.GenerateContentResponse response) {
-  final buffer = StringBuffer();
-  buffer.writeln('GenerateContentResponse(');
-  buffer.writeln('  usageMetadata: ${response.usageMetadata},');
-  buffer.writeln('  promptFeedback: ${response.promptFeedback},');
-  buffer.writeln('  candidates: [');
-  for (final google_ai.Candidate candidate in response.candidates) {
-    buffer.writeln('    Candidate(');
-    buffer.writeln('      finishReason: ${candidate.finishReason},');
-    buffer.writeln('      finishMessage: "${candidate.finishMessage}",');
-    buffer.writeln('      content: Content(');
-    buffer.writeln('        role: "${candidate.content?.role}",');
-    buffer.writeln('        parts: [');
-    if (candidate.content?.parts != null) {
-      for (final google_ai.Part part in candidate.content!.parts) {
-        if (part.text != null) {
-          buffer.writeln('          Part(text: "${part.text}"),');
-        } else if (part.functionCall != null) {
-          buffer.writeln('          Part(functionCall:');
-          buffer.writeln('            FunctionCall(');
-          buffer.writeln('              name: "${part.functionCall!.name}",');
-          final String indentedLines =
-              (const JsonEncoder.withIndent('  ').convert(
-                part.functionCall!.args ?? {},
-              )).split('\n').join('\n              ');
-          buffer.writeln('              args: $indentedLines,');
-          buffer.writeln('            ),');
-          buffer.writeln('          ),');
-        } else {
-          buffer.writeln('          Unknown Part,');
+  String _responseToString(google_ai.GenerateContentResponse response) {
+    final buffer = StringBuffer();
+    buffer.writeln('GenerateContentResponse(');
+    buffer.writeln('  usageMetadata: ${response.usageMetadata},');
+    buffer.writeln('  promptFeedback: ${response.promptFeedback},');
+    buffer.writeln('  candidates: [');
+    for (final google_ai.Candidate candidate in response.candidates) {
+      buffer.writeln('    Candidate(');
+      buffer.writeln('      finishReason: ${candidate.finishReason},');
+      buffer.writeln('      finishMessage: "${candidate.finishMessage}",');
+      buffer.writeln('      content: Content(');
+      buffer.writeln('        role: "${candidate.content?.role}",');
+      buffer.writeln('        parts: [');
+      if (candidate.content?.parts != null) {
+        for (final google_ai.Part part in candidate.content!.parts) {
+          if (part.text != null) {
+            buffer.writeln('          Part(text: "${part.text}"),');
+          } else if (part.functionCall != null) {
+            buffer.writeln('          Part(functionCall:');
+            buffer.writeln('            FunctionCall(');
+            buffer.writeln('              name: "${part.functionCall!.name}",');
+            final String indentedLines =
+            (const JsonEncoder.withIndent('  ').convert(
+              part.functionCall!.args ?? {},
+            )).split('\n').join('\n              ');
+            buffer.writeln('              args: $indentedLines,');
+            buffer.writeln('            ),');
+            buffer.writeln('          ),');
+          } else {
+            buffer.writeln('          Unknown Part,');
+          }
         }
       }
+      buffer.writeln('        ],');
+      buffer.writeln('      ),');
+      buffer.writeln('    ),');
     }
-    buffer.writeln('        ],');
-    buffer.writeln('      ),');
-    buffer.writeln('    ),');
+    buffer.writeln('  ],');
+    buffer.writeln(')');
+    return buffer.toString();
   }
-  buffer.writeln('  ],');
-  buffer.writeln(')');
-  return buffer.toString();
 }
