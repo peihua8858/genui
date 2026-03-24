@@ -131,8 +131,8 @@ class _TravelPlannerPageState extends State<TravelPlannerPage>
           }else{
             updatedMessages.add(ChatMessage.model1(ValueNotifier(event.text)));
             _messages.value = updatedMessages;
-            _scrollToBottom();
           }
+          _scrollToBottom();
         }
       } else if (event is ConversationSurfaceAdded) {
         genUiLogger.info("addEvent:Conversation>>>ConversationSurfaceAdded event.surfaceId: ${event.surfaceId}");
